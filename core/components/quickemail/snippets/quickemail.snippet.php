@@ -55,7 +55,7 @@ if (! $modx->user->hasSessionContext('mgr')) return 'Unauthorized';
 $sp = $scriptProperties;
 
 /* get the MODX mailer object */
-$modx->getService('mail', 'mail.modPHPMailer');
+$mail = $modx->getService('mail', 'mail.modPHPMailer');
 
 /* set default values */
 $output = '';
@@ -132,31 +132,31 @@ if ($debug) {
 
 }
 
-$modx->mail->set(modMail::MAIL_BODY, $msg);
-$modx->mail->set(modMail::MAIL_FROM, $emailSender);
-$modx->mail->set(modMail::MAIL_FROM_NAME, $fromName);
-$modx->mail->set(modMail::MAIL_SENDER, $emailSender);
-$modx->mail->set(modMail::MAIL_SUBJECT, $subject);
-$modx->mail->address('to', $to, $toName);
-$modx->mail->address('reply-to', $replyTo);
+$mail->set(modMail::MAIL_BODY, $msg);
+$mail->set(modMail::MAIL_FROM, $emailSender);
+$mail->set(modMail::MAIL_FROM_NAME, $fromName);
+$mail->set(modMail::MAIL_SENDER, $emailSender);
+$mail->set(modMail::MAIL_SUBJECT, $subject);
+$mail->address('to', $to, $toName);
+$mail->address('reply-to', $replyTo);
 if (! empty ($cc))  {
-    $modx->mail->address('cc', $cc);
+    $mail->address('cc', $cc);
 }
 
 if (!empty ($bcc)) {
-    $modx->mail->address('bcc', $bcc);
+    $mail->address('bcc', $bcc);
 }
 
-$modx->mail->setHTML($html);
+$mail->setHTML($html);
 if ($debug) {
     ob_start();
     echo '<pre>';
 
     if ($modx->getOption('mail_use_smtp') ) {
-        $modx->mail->mailer->SMTPDebug = 2;
+        $mail->mailer->SMTPDebug = 2;
     }
 }
-$sent = $modx->mail->send();
+$sent = $mail->send();
 
 if ($debug) {
     echo '</pre>';
@@ -164,7 +164,7 @@ if ($debug) {
     ob_end_clean();
 }
 
-$modx->mail->reset();
+$mail->reset();
 
 if ($sent) {
     $output .= $successMessage;
@@ -175,7 +175,7 @@ if ($sent) {
 
     $output .= $failureMessage;
     $output .= $errorHeader;
-    $output .= $modx->mail->mailer->ErrorInfo;
+    $output .= $mail->mailer->ErrorInfo;
     if (!empty($ob)) {
         $output .= $smtpErrorHeader;
     }
